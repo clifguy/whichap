@@ -90,6 +90,21 @@ final class HelpWindowController: NSWindowController {
         IP is refreshed only on association change or when the captive verdict transitions \
         to reachable, not on every periodic tick.
 
+        Provider identifies the network operator for the public IP, using GeoJS over HTTPS. \
+        With a VPN or corporate gateway this may be the exit provider rather than your local ISP. \
+        The Provider row appears when a lookup succeeds; internet status and IP do not wait for it. \
+        Click Provider to copy its full value, or use Copy All to include it with the public IP.
+
+        Provider lookups follow the existing internet-check preference and connection/wake/path changes, \
+        never menu opening or the periodic safety check. Successful names are cached in memory for \
+        24 hours (up to 32 IPs), and cleared when checking is disabled or the app quits. \
+        GeoJS receives the public IP being looked up and the request's source IP; no SSID, BSSID, \
+        AP mapping, or connection history is sent. No account, API key, or setup is required. \
+        Service failures simply hide Provider. GeoJS is provided as-is and may throttle requests.
+
+        Provider data: GeoJS (GeoLite data by MaxMind). \
+        Terms: https://www.geojs.io/tos/ — Privacy: https://www.geojs.io/privacy/
+
         Using the Dropdown
         ━━━━━━━━━━━━━━━━━━
         • Click any info item to copy its value to the clipboard

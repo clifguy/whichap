@@ -30,6 +30,7 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
     private let manufacturerItem = NSMenuItem()
     private let signalItem = NSMenuItem()
     private let internetItem = NSMenuItem()
+    private let providerItem = NSMenuItem()
     private let noiseItem = NSMenuItem()
     private let snrItem = NSMenuItem()
     private let bandItem = NSMenuItem()
@@ -576,6 +577,7 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
         menu.addItem(wifiSettingsItem)
 
         menu.addItem(internetItem)
+        menu.addItem(providerItem)
         menu.addItem(uptimeItem)
 
         // Location permission UI (shown only when location is denied/restricted/notDetermined)
@@ -634,7 +636,7 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
         menu.addItem(sep1)
 
         // Make all info items clickable to copy
-        let copyableItems = [ssidItem, securityItem, bssidItem, manufacturerItem, signalItem, internetItem, noiseItem,
+        let copyableItems = [ssidItem, securityItem, bssidItem, manufacturerItem, signalItem, internetItem, providerItem, noiseItem,
                              snrItem, bandItem, modeItem, txRateItem, ipItem, connectedTimeItem, uptimeItem]
         for item in copyableItems {
             item.target = self
@@ -709,6 +711,14 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
         let locationPending = currentLocationAccess == .notDetermined
         let locationUnavailable = locationSystemOff || locationBlocked || locationPending
         let showConnectionInfo = isConnected && currentLocationAccess == .authorized
+
+        // Hide stale enrichment even when connection/permission state returns early below.
+        let providerTitle = showConnectionInfo && cachedCheckInternet && info?.internetReachability == .reachable
+            ? ProviderPresentation.title(ip: info?.externalIPAddress, provider: info?.externalProvider) : nil
+        providerItem.representedObject = providerTitle == nil ? nil : info?.externalProvider
+        providerItem.toolTip = providerTitle == nil ? nil : info?.externalProvider
+        providerItem.isHidden = providerTitle == nil
+        if let providerTitle, providerItem.title != providerTitle { providerItem.title = providerTitle }
 
         // Only update location section and visibility when state actually changes
         if currentLocationAccess != lastLocationAccess || showConnectionInfo != (lastMenuShowConnection ?? false) {
@@ -991,7 +1001,9 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
         // Extract the value after the label prefix (e.g. "SSID: foo" → "foo")
         let text = sender.title
         let value: String
-        if let colonRange = text.range(of: ": ") {
+        if let fullValue = sender.representedObject as? String {
+            value = fullValue
+        } else if let colonRange = text.range(of: ": ") {
             value = String(text[colonRange.upperBound...])
         } else {
             value = text
@@ -1030,7 +1042,7 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
         Mode:      \(info.phyMode)
         Tx Rate:   \(txFormatted) Mbps
         IP:        \(info.ipAddress ?? "Unavailable")
-        Mac Uptime: \(uptimeFormatted)
+        \(cachedCheckInternet && info.internetReachability == .reachable ? ProviderPresentation.supportLines(ip: info.externalIPAddress, provider: info.externalProvider) : "")Mac Uptime: \(uptimeFormatted)
         """
 
         NSPasteboard.general.clearContents()
