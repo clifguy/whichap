@@ -24,4 +24,4 @@ top -l 30 -s 10 -pid <verified-WhichAP-PID> -stats pid,cpu,mem,threads,time
 
 Pass: sustained CPU at or below 0.1%, stable RSS, no thread growth. Record actual observed result and candidate; a single sample is insufficient. Do not commit if this gate cannot be completed without an owner-approved exception.
 
-For documentation-only changes, review accuracy and links, run whitespace validation, and retain the above pre-commit gate. No automated test suite or CI workflow was found in the initial checkout; refresh that observation as the project evolves.
+For documentation-only changes, review accuracy and links, run whitespace validation, and retain the above pre-commit gate. Focused menu bar checks are available via `bash scripts/test-menu-bar.sh` (macOS with Xcode). They compile the production display model and icon renderer and check defaults, persistence, status precedence, fixed image size, template rendering, caching, and accessibility descriptions. They do not replace live UI checks. No CI workflow or full application test suite is configured.

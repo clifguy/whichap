@@ -26,7 +26,8 @@ final class HelpWindowController: NSWindowController {
         Getting Started
         ━━━━━━━━━━━━━━━
         WhichAP shows which Wi-Fi access point you're connected to. \
-        Your SSID appears on the top line of the menu bar, and the AP name appears below it.
+        By default, a compact Wi-Fi icon with an AP badge appears in the menu bar. \
+        Click it for connection details, or hover for the network, AP name, and current status.
 
         To identify access points, you need to provide a mapping of BSSIDs (MAC addresses) to AP names.
 
@@ -48,6 +49,8 @@ final class HelpWindowController: NSWindowController {
         ━━━━━━━━━━━━━━━
         In Preferences under Display:
 
+        • Menu bar display — Icon only (default) or Detailed display. Detailed display shows \
+        your SSID above the mapped AP name; the choice is saved and applies immediately.
         • AP Name Max Length — limits how many characters are shown in the menu bar
         • Truncate AP name at ":" — hides the technical suffix after ":" in AP names
         • Geek mode — changes the menu bar to show SSID:AP Name on the top line \
@@ -58,7 +61,11 @@ final class HelpWindowController: NSWindowController {
 
         Signal Quality
         ━━━━━━━━━━━━━━
-        The menu bar text and Signal line turn red when your connection is Poor or Bad:
+        In icon-only mode, faint outer arcs indicate Poor or Bad signal. A slash means disconnected, \
+        ? means location permission is pending, and ! means Location Services access or internet \
+        access needs attention. Hover or open the menu for the reason.
+
+        In Detailed display, the menu bar text and Signal line turn red when your connection is Poor or Bad:
 
         • Excellent: better than -50 dBm
         • Good: -50 to -60 dBm
@@ -68,7 +75,7 @@ final class HelpWindowController: NSWindowController {
 
         Internet Reachability
         ━━━━━━━━━━━━━━━━━━━━━
-        On by default. Turns the menu bar red when you're associated to an AP but the \
+        When enabled, shows ! on the icon or turns detailed text red when you're associated to an AP but the \
         internet isn't actually working — captive portal, broken upstream, etc. Turn off \
         in Preferences → "Flag missing internet access" if you'd rather the menu bar not \
         reflect upstream status. Suggested by Clif Guy.

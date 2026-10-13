@@ -56,7 +56,7 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
     override init() {
         super.init()
 
-        statusItem.button?.title = "WhichAP"
+        updateMenuBarText(with: nil)
 
         menu.autoenablesItems = false
         statusItem.menu = menu
@@ -258,6 +258,10 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
 
     // MARK: - Display Settings (cached, refreshed on settings change)
 
+    private var cachedDisplayMode = MenuBarDisplayMode.load()
+    private var lastIconState: MenuBarIconState?
+    private var showingIcon = false
+
     private var cachedMaxNameLength: Int = {
         let val = UserDefaults.standard.integer(forKey: "apNameMaxLength")
         return val > 0 ? val : 20
@@ -277,6 +281,7 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
     }()
 
     private func refreshCachedSettings() {
+        cachedDisplayMode = MenuBarDisplayMode.load()
         let val = UserDefaults.standard.integer(forKey: "apNameMaxLength")
         cachedMaxNameLength = val > 0 ? val : 20
         if UserDefaults.standard.object(forKey: "showBand") == nil {
@@ -319,6 +324,51 @@ final class StatusBarController: NSObject, WiFiMonitorDelegate {
 
     private func updateMenuBarText(with info: WiFiConnectionInfo?) {
         guard let button = statusItem.button else { return }
+
+        let state = MenuBarIconState.resolve(
+            locationAuthorized: currentLocationAccess == .authorized,
+            permissionPending: currentLocationAccess == .notDetermined,
+            connected: info?.ssid != nil,
+            poorSignal: info?.signalQuality == .poor || info?.signalQuality == .bad,
+            internetProblem: info?.internetReachability == .captive || info?.internetReachability == .unreachable,
+            checkInternet: cachedCheckInternet)
+        var description = "WhichAP — \(state.statusDescription)"
+        if currentLocationAccess == .authorized, let ssid = info?.ssid {
+            description += "\nNetwork: \(ssid)"
+            if let bssid = info?.bssid, let name = apName(forBSSID: bssid) {
+                description += "\nAccess point: \(name)"
+            }
+        }
+        if button.toolTip != description { button.toolTip = description }
+        button.setAccessibilityLabel(description)
+
+        if cachedDisplayMode == .iconOnly {
+            if !showingIcon {
+                removeStackView()
+                button.attributedTitle = NSAttributedString(string: "")
+                button.title = ""
+                button.imagePosition = .imageOnly
+                statusItem.length = 32
+                showingIcon = true
+            }
+            button.appearsDisabled = false
+            if lastIconState != state {
+                button.image = MenuBarIcon.image(for: state)
+                lastIconState = state
+            }
+            return
+        }
+        if showingIcon {
+            button.image = nil
+            button.imagePosition = .noImage
+            showingIcon = false
+            lastIconState = nil
+            removeStackView()
+            lastMenuBarTop = nil
+            lastMenuBarBottom = nil
+            lastMenuBarPoor = nil
+            lastMenuBarReachability = nil
+        }
 
         // Location permission states take precedence over connection state
         switch currentLocationAccess {

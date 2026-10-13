@@ -2,15 +2,15 @@
 
 A lightweight macOS menu bar utility that shows which Wi-Fi access point you're connected to.
 
-Instead of a raw BSSID (MAC address), WhichAP displays a friendly AP name like `TechOps - AC43` right in the menu bar — alongside your SSID. You provide a mapping of BSSIDs to AP names via JSON, CSV, a hosted URL, or manual entry.
+WhichAP defaults to a compact Wi-Fi icon with an AP badge. Hover for your SSID, mapped AP name, and status, or click for connection details. Choose **Preferences → Display → Detailed display** to show your SSID and friendly AP name in the menu bar. You provide a mapping of BSSIDs to AP names via JSON, CSV, a hosted URL, or manual entry.
 
 ## Features
 
-- **Two-line menu bar display** — SSID on top, AP name below
-- **Geek mode** — optional display showing SSID:AP Name on top, signal%|band|channel on bottom
+- **Menu bar display choice** — Icon only by default, with cached artwork that adapts to the menu bar appearance; optional Detailed display shows SSID on top and AP name below. The choice is saved and applies immediately.
+- **Geek mode** — optional Detailed display showing SSID:AP Name on top, signal%|band|channel on bottom; its setting is retained while Icon only is selected
 - **AP manufacturer lookup** — identifies the AP vendor via the IEEE OUI database (cached in memory)
 - **Detailed connection info dropdown** — signal strength, noise, SNR, band, channel, PHY mode, Tx rate, IP address, security type, manufacturer
-- **Signal quality warning** — menu bar and dropdown text turns red when signal is Poor or Bad
+- **Signal quality warning** — faint outer icon arcs indicate Poor or Bad signal; Detailed display and dropdown signal text turn red
 - **Signal % style** — choose between Standard (conservative, clamped at -37 dBm) and Lenient (linear -50 → -100 dBm) in Preferences
 - **Connection timer** — shows how long you've been on the current AP (live-updating)
 - **Mac uptime** — shows system uptime in the dropdown (days, hours, minutes), read from `kern.boottime` so it matches Terminal `uptime`
@@ -18,7 +18,7 @@ Instead of a raw BSSID (MAC address), WhichAP displays a friendly AP name like `
 - **Roam pattern flags** — automatically marks Sticky (held a weak AP too long), Ping-pong (rapid flapping between two APs), and Slow-roam (long delay before joining a new AP) events
 - **Channel-change detection** — records a separate event when an AP changes channel without a BSSID change
 - **Roam notifications (opt-in)** — optional macOS notifications when you roam, reconnect, or an AP changes channel. Choose All events or Problems only. Off by default.
-- **Internet reachability** — turns the menu bar red when you're associated to an AP but the internet isn't actually working (captive portal, broken upstream). Probes `captive.apple.com` on connect, roam, wake, and once every 60 seconds as a safety net. The dropdown shows reachable / captive portal / not reachable plus your public (egress) IP via `icanhazip.com`. On by default; toggle in Preferences.
+- **Internet reachability** — shows an attention marker on the icon or turns Detailed display red when you're associated to an AP but the internet isn't actually working (captive portal, broken upstream). Probes `captive.apple.com` on connect, roam, wake, and once every 60 seconds as a safety net. The dropdown shows reachable / captive portal / not reachable plus your public (egress) IP via `icanhazip.com`. On by default; toggle in Preferences.
 - **Click to copy** — click any item in the dropdown to copy its value. "Copy All" formats everything for a support ticket.
 - **Restart Wi-Fi** — one-click Wi-Fi toggle from the dropdown, auto-recovers
 - **Wi-Fi Settings** — quick link to macOS Wi-Fi settings
@@ -70,7 +70,7 @@ Requires Xcode and macOS 13+.
 
 ## Providing Your BSSID Mapping
 
-WhichAP needs a mapping of BSSID (MAC address) to AP name. Without it, the app shows your SSID but can't identify the specific access point.
+WhichAP needs a mapping of BSSID (MAC address) to AP name. Without it, the tooltip and connection menu show your SSID but can't identify the specific access point.
 
 ### Accepted Formats
 
@@ -106,7 +106,7 @@ On first launch, WhichAP shows a brief intro panel explaining what's about to ha
 
 ### If the prompt never appeared
 
-If the menu bar says **"⚠ Location Off"** even when you're connected to Wi-Fi, click the WhichAP menu. You'll see one of three states:
+If the icon shows **!** (or Detailed display says **"⚠ Location Off"**) even when you're connected to Wi-Fi, click the WhichAP menu. You'll see one of three states:
 
 - **"Location Services Disabled"** — the system-wide Location Services switch is off. Click **Open Location Settings…** and turn on the master switch at the top.
 - **"Location Access Required"** — WhichAP is in the list but toggled off. Click **Open Location Settings…** and toggle WhichAP on.
