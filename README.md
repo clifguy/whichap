@@ -41,6 +41,22 @@ Instead of a raw BSSID (MAC address), WhichAP displays a friendly AP name like `
 
 The app is signed with a Developer ID certificate and notarized with Apple — no Gatekeeper warnings.
 
+### Local development on Clif’s Mac
+
+Install Xcode from the Mac App Store, open it once, and finish its first-launch setup. Only macOS support is needed for WhichAP.
+
+Open `WhichAP.xcodeproj`, select the **WhichAP** scheme and **My Mac**, then press **Run** (⌘R). Debug builds use **Sign to Run Locally**, with no development team or signing certificate required. Their bundle identifier is `com.clifguy.whichap.debug`, keeping their preferences and permissions separate from the distributed app.
+
+Or build and launch from this repository:
+
+```bash
+./scripts/local-build.sh
+```
+
+The script uses `/Applications/Xcode.app` when available and puts its output in `build/Debug/WhichAP.app`. Allow Location Services when the app asks so it can read your Wi-Fi access point. Local signing may cause macOS to ask again after code changes.
+
+Release builds and the Granger deployment scripts still use the upstream signing identity.
+
 ### From source
 ```bash
 git clone https://github.com/jpowl7/whichap.git

@@ -1,5 +1,7 @@
 # WhichAP — project rules and reference
 
+For Clif’s fork, read `docs/project-policy.md` and `docs/checks.md` first. The adopted fork policy explicitly scopes the inherited rules below.
+
 This file is loaded into every Claude session automatically. Project-specific
 rules live here. For ship-time procedure, see `docs/release-checklist.md`.
 
