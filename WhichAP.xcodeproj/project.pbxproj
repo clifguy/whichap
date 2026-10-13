@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D00330000000000000000001 /* MenuBarDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D00330000000000000000002 /* MenuBarDisplay.swift */; };
 		A1B2C3D4E5F60001000A0001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60002000A0001 /* AppDelegate.swift */; };
 		A1B2C3D4E5F60001000A0002 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60002000A0002 /* StatusBarController.swift */; };
 		A1B2C3D4E5F60001000A0003 /* WiFiMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60002000A0003 /* WiFiMonitor.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D00330000000000000000002 /* MenuBarDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarDisplay.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60002000A0001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60002000A0002 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60002000A0003 /* WiFiMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiFiMonitor.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 				A1B2C3D4E5F60002000A0008 /* main.swift */,
 				A1B2C3D4E5F60002000A0001 /* AppDelegate.swift */,
 				A1B2C3D4E5F60002000A0002 /* StatusBarController.swift */,
+				D00330000000000000000002 /* MenuBarDisplay.swift */,
 				A1B2C3D4E5F60002000A0003 /* WiFiMonitor.swift */,
 				A1B2C3D4E5F60002000A0009 /* BSSIDMapping.swift */,
 				A1B2C3D4E5F60002000A000B /* PreferencesWindow.swift */,
@@ -191,6 +194,7 @@
 				A1B2C3D4E5F60001000A0005 /* main.swift in Sources */,
 				A1B2C3D4E5F60001000A0001 /* AppDelegate.swift in Sources */,
 				A1B2C3D4E5F60001000A0002 /* StatusBarController.swift in Sources */,
+				D00330000000000000000001 /* MenuBarDisplay.swift in Sources */,
 				A1B2C3D4E5F60001000A0003 /* WiFiMonitor.swift in Sources */,
 				A1B2C3D4E5F60001000A0006 /* BSSIDMapping.swift in Sources */,
 				A1B2C3D4E5F60001000A0008 /* PreferencesWindow.swift in Sources */,

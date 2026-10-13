@@ -35,6 +35,7 @@ final class PreferencesWindowController: NSWindowController {
     private var maxLengthStepper: NSStepper!
     private var maxLengthLabel:   NSTextField!
     private var truncateCheckbox: NSButton!
+    private var displayModePopUp: NSPopUpButton!
     private var geekModeCheckbox: NSButton!
     private var launchCheckbox:   NSButton!
     private var signalStylePopUp: NSPopUpButton!
@@ -264,6 +265,14 @@ final class PreferencesWindowController: NSWindowController {
 
         stackView.addArrangedSubview(makeSectionLabel("Display"))
 
+        stackView.addArrangedSubview(makeFieldLabel("Menu bar display"))
+        displayModePopUp = NSPopUpButton()
+        displayModePopUp.addItems(withTitles: ["Icon only", "Detailed display"])
+        displayModePopUp.target = self
+        displayModePopUp.action = #selector(displayModeChanged(_:))
+        addWidthConstraint(displayModePopUp, width: fieldWidth)
+        stackView.addArrangedSubview(displayModePopUp)
+
         // Max length
         maxLengthLabel = NSTextField(labelWithString: "20")
         maxLengthLabel.alignment = .center
@@ -297,7 +306,7 @@ final class PreferencesWindowController: NSWindowController {
         internetCheckCheckbox.font = NSFont.systemFont(ofSize: NSFont.systemFontSize)
         stackView.addArrangedSubview(internetCheckCheckbox)
 
-        let internetCheckHint = makeFieldLabel("Turns menu bar text red on no-internet")
+        let internetCheckHint = makeFieldLabel("Flags the icon or detailed text on no-internet")
         internetCheckHint.font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
         internetCheckHint.textColor = .secondaryLabelColor
         stackView.addArrangedSubview(internetCheckHint)
@@ -441,6 +450,8 @@ final class PreferencesWindowController: NSWindowController {
         maxLengthStepper.integerValue = clampedMaxLen
         maxLengthLabel.stringValue = "\(clampedMaxLen)"
 
+        displayModePopUp.selectItem(at: MenuBarDisplayMode.load(from: defaults) == .iconOnly ? 0 : 1)
+        updateDisplayModeControls()
         truncateCheckbox.state = defaults.bool(forKey: PrefKey.truncateAtColon) ? .on : .off
         geekModeCheckbox.state = defaults.bool(forKey: PrefKey.geekMode) ? .on : .off
         internetCheckCheckbox.state = defaults.bool(forKey: PrefKey.checkInternet) ? .on : .off
@@ -675,6 +686,18 @@ final class PreferencesWindowController: NSWindowController {
 
     @objc private func truncateAtColonChanged(_ sender: NSButton) {
         UserDefaults.standard.set(sender.state == .on, forKey: PrefKey.truncateAtColon)
+        NotificationCenter.default.post(name: Notification.Name("DisplaySettingsChanged"), object: nil)
+    }
+
+    private func updateDisplayModeControls() {
+        geekModeCheckbox.isEnabled = displayModePopUp.indexOfSelectedItem == 1
+        geekModeCheckbox.toolTip = "Adds signal, band, and channel to Detailed display. Your choice is retained in Icon only mode."
+    }
+
+    @objc private func displayModeChanged(_ sender: NSPopUpButton) {
+        let mode: MenuBarDisplayMode = sender.indexOfSelectedItem == 1 ? .detailed : .iconOnly
+        mode.save()
+        updateDisplayModeControls()
         NotificationCenter.default.post(name: Notification.Name("DisplaySettingsChanged"), object: nil)
     }
 
