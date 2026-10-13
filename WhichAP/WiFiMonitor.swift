@@ -976,6 +976,7 @@ final class ReachabilityMonitor {
     private var allowsProbes = true
     private var networkGeneration = UUID()
     private var probeGeneration = UUID()
+    private var needsIPRefresh = false
     private let providerLookup = ProviderLookup()
     var externalProvider: String? { providerLookup.provider }
 
@@ -1009,7 +1010,7 @@ final class ReachabilityMonitor {
     /// Public-facing IPv4 or IPv6 address from icanhazip.com. Refreshed only when
     /// there's a reason to: association change, wake from sleep, or a
     /// captive verdict that just flipped to `.reachable`. The 60-second
-    /// safety-net captive probe does NOT re-fetch the IP. Cleared when the
+    /// safety-net captive probe re-fetches only if an event refresh is still pending. Cleared when the
     /// verdict flips away from `.reachable`. Decorative — failures here
     /// silently leave the value as nil.
     private(set) var externalIP: String? {
@@ -1151,6 +1152,7 @@ final class ReachabilityMonitor {
         probeTask?.cancel()
         probeTask = nil
         networkGeneration = UUID()
+        needsIPRefresh = true
         ipProbeTask?.cancel()
         ipProbeTask = nil
         externalIP = nil
@@ -1191,12 +1193,12 @@ final class ReachabilityMonitor {
             let wasNotReachable = (current != .reachable)
             consecutiveFailures = 0
             current = .reachable
-            // Refresh IP if the caller explicitly asked (association change,
-            // wake from sleep) or if the verdict just flipped from non-reachable
+            // Preserve event-refresh intent across preemption or transient failures.
+            // Also refresh if the verdict just flipped from non-reachable
             // → reachable (captive cleared, WAN came back) — both imply egress
-            // may have changed. Periodic ticks skip this to keep traffic to
+            // may have changed. Steady-state periodic ticks skip this to keep traffic to
             // icanhazip.com near zero at steady state.
-            if refreshIP || wasNotReachable {
+            if needsIPRefresh || wasNotReachable {
                 triggerIPProbe()
             }
         } else {
@@ -1215,8 +1217,9 @@ final class ReachabilityMonitor {
     }
 
     private func triggerIPProbe() {
+        guard ipProbeTask == nil else { return }
+        needsIPRefresh = true
         let token = networkGeneration
-        ipProbeTask?.cancel()
         var req = URLRequest(url: Self.ipProbeURL)
         req.httpMethod = "GET"
         req.timeoutInterval = Self.ipProbeTimeout
@@ -1224,6 +1227,7 @@ final class ReachabilityMonitor {
         let task = URLSession.shared.dataTask(with: req) { [weak self] data, response, error in
             DispatchQueue.main.async {
                 guard let self, self.isRunning, self.networkGeneration == token else { return }
+                self.ipProbeTask = nil
                 self.handleIPProbeResult(data: data, response: response, error: error)
             }
         }
@@ -1234,11 +1238,12 @@ final class ReachabilityMonitor {
     private func handleIPProbeResult(data: Data?, response: URLResponse?, error: Error?) {
         if let error = error {
             if (error as NSError).code == NSURLErrorCancelled { return }
-            return  // missing IP just hides the parenthetical; no retry
+            return  // keep refresh pending for a later successful reachability probe
         }
         guard (response as? HTTPURLResponse)?.statusCode == 200,
               let data, let body = String(data: data, encoding: .utf8),
               let ip = ProviderLookup.normalizedIP(body), current == .reachable else { return }
+        needsIPRefresh = false
         externalIP = ip
         providerLookup.update(ip: ip)
     }

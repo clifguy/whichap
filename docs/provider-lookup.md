@@ -20,7 +20,7 @@ No account, paid tier, credential provisioning/storage/rotation, or backend is n
 
 ## Runtime behavior
 
-- Lookup only after a valid current IP arrives from an event-driven refresh. Menu opening and the minute-based reachability safety check do not initiate enrichment.
+- Lookup only after a valid current IP arrives from an event-driven refresh. Menu opening and steady-state minute-based reachability checks do not initiate enrichment. If an event refresh is interrupted or its probe/IP request fails, the refresh remains pending until an IP succeeds; a later successful reachability check can recover it.
 - Success cache: normalized IP key, 24-hour expiration checked on the next eligible event, memory-only, at most 32 entries. No new polling timer or persistent IP history.
 - Coalesce pending same-IP requests. On network changes cancel old work, clear displayed egress state and ignore obsolete responses using generation identities.
 - Failures/missing names: retain ordinary Internet/IP information, hide Provider, and suppress repeat queries for that IP for 60 seconds. A later eligible event may retry; there is no retry loop.
@@ -52,3 +52,7 @@ GeoJS receives the queried public IP and request source IP through its Cloudflar
 `bash scripts/test-provider.sh` compiles production ProviderLookup and presentation helpers, exercising deterministic cache, transport, failure, cancellation and output behavior. Existing menu-bar checks remain separately required. The app build and live UI/resource checks follow docs/checks.md. These focused checks do not constitute a full application suite or CI.
 
 A single live sample of the production lookup against public test addresses on 2026-10-13 measured approximately 102 ms cold / 0.043 ms cached for IPv4, and 67 ms cold / 0.025 ms cached for IPv6. Both returned a provider. These are local observations, not service guarantees or direct menu-opening measurements. Focused checks verify one request during repeated same-IP updates and no enrichment from rendering helpers. Full UI verification is reported separately with delivery evidence.
+
+Round-1 review recovery checks: `bash scripts/test-reachability.sh` compiles the verbatim production ReachabilityMonitor with a deterministic URLSession transport double. It covers periodic preemption of event refresh, transient probe/IP timeout recovery, no steady-state IP/provider requests, obsolete responses, disable and constrained-association guards. This closes a gap not covered by the original lookup-only tests.
+
+`bash scripts/measure-provider-menu.sh` measured native AppKit menu construction/layout using production Provider presentation and a long provider name plus IPv6 address: 100 samples, first/max 8.716 ms, median 0.056 ms, p95 0.061 ms. This is a controlled native-layout measurement, not mouse click-to-visible latency or a benchmark of the entire dropdown. Clif separately confirmed the actual Provider row and both clipboard actions work.

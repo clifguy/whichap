@@ -96,7 +96,8 @@ final class HelpWindowController: NSWindowController {
         Click Provider to copy its full value, or use Copy All to include it with the public IP.
 
         Provider lookups follow the existing internet-check preference and connection/wake/path changes, \
-        never menu opening or the periodic safety check. Successful names are cached in memory for \
+        never menu opening or steady-state periodic checks. Interrupted IP refreshes recover on a later check. \
+        Successful names are cached in memory for \
         24 hours (up to 32 IPs), and cleared when checking is disabled or the app quits. \
         GeoJS receives the public IP being looked up and the request's source IP; no SSID, BSSID, \
         AP mapping, or connection history is sent. No account, API key, or setup is required. \
