@@ -57,3 +57,23 @@ Only tracks time Claude is actively working (reading, editing, building, researc
 - **Hit Jamf HTTP 409 "Problem with category name"** on the package PUT — root-caused to the "No category assigned" placeholder; fix is to strip the `<category>` element before PUT (applies to policy PUTs + the restore too). Saved as `feedback_jamf_category_409.md`.
 - 🔴 One-Mac canary: snapshot policy 204, narrowed scope to computer 564, Jason ran `sudo jamf policy -id 204` — CasperShare fetch + SHA-512 verify + install + pre/post scripts all succeeded, recon submitted. Restored policy 204 scope to group 299. Smart group 301 = 1 member (564); remaining 13 install on next check-in.
 - Housekeeping: corrected test-group count 9 → 14 in CLAUDE.md and release-checklist.md; updated project_progress.md memory.
+
+## 2026-10-13 — Clif local development setup (Codex)
+- Started 07:56 CDT.
+- Work: install Xcode and configure Debug builds for local signing on Clif’s Mac.
+- Local setup prepared; project file and shell syntax validated. Build/run verification pending Xcode installation and first-launch setup.
+- Paused 08:00 CDT, approximately 4 minutes active; waiting for App Store authorization.
+- Resumed 08:39–08:41 CDT, approximately 2 minutes active. Xcode 27.0 installed and license/setup completed by Clif. Debug build succeeded; ad-hoc signature and all four application entitlements verified (plus debugger entitlement). Xcode disables hardened runtime for ad-hoc signing. App launched outside the tool sandbox; process remained running at 0.0% sampled CPU. UI inspection timed out, so Wi-Fi display/location authorization remains unverified. No commit or publication.
+
+## 2026-10-13 — SDLC policy adoption (Codex)
+- Started 09:35 CDT. Clif explicitly approved policy adoption and SAGE project registration; no commit or publication authorized.
+- Finished 09:38 CDT, approximately 3 minutes active. Adopted AGENTS.md, docs/project-policy.md and docs/checks.md; added a one-way CLAUDE.md pointer. Policy resolution passed for ticketing, kickoff, commit, review-pr, converge-review and merge.
+- Registered WhichAP in hosted software_development as ed17c894_whichap (project_id whichap). Verified active v1, confirmed owner/repository metadata, matching source/stored SHA-256, linear singleton chain, and abstraction_complete. No tickets, commits, code publication or vault schema changes. Prior local setup edits preserved.
+
+## 2026-10-13 — Local setup and SDLC commit validation (Codex)
+- Started 09:41 CDT. Local commit authorized; no publication. Initial branch main; commit skill requires an explicitly directed feature branch before staging/commit.
+- Validation completed: fresh Debug build and script launch succeeded; signature, local bundle ID and all four app entitlements plus debugger entitlement verified. Project plist, shell syntax, whitespace and missing-Xcode failure-path checks passed. No automated suite or CI configured.
+- Five-minute gate passed: 31 samples at 10-second spacing, CPU 0.0–0.1%, RSS approximately 14 MB stable, threads fluctuating within 4–7 with no sustained upward trend, CPU time 0.25 seconds at end. Evidence: /tmp/whichap-commit-performance.log.
+- Paused before staging/commit because main is protected and the commit workflow requires explicit direction before creating a branch. All eight intended files reviewed; no actionable defects found in working-tree review.
+- Resumed 09:53 CDT: Clif explicitly authorized setup/local-development and a local-only commit. Reused verified build/performance results after confirming setup and policy bytes unchanged; reviewed the added validation log. No push or PR authorized.
+- Final staged review completed with no actionable findings. Updated the policy’s temporary uncommitted-work wording to the standing preservation rule, consistent with Clif’s explicit commit scope. Preparing the local commit; build and performance evidence remain applicable.
